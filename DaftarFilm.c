@@ -25,7 +25,7 @@ void MenampilkanLokasi(){
     printf("2. %s.\n", NamaLokasi[1]);
 }
 
-void PilihLokasi(){
+int PilihLokasi(){
     
     int Lokasi;
     printf("Masukan lokasi bioskop (1-2) ");
@@ -35,9 +35,11 @@ void PilihLokasi(){
         printf("Pilihan tidak valid. Silahkan isi lagi. \n");
         MenampilkanLokasi();
         PilihLokasi();
+
         
     } else {
         printf("Kamu memilih menonton di %s.\n", NamaLokasi[Lokasi - 1]);
+        return Lokasi - 1;
     }
 }
 
@@ -48,7 +50,7 @@ void MenampilkanJadwal(int Film){
     }
 }
 
-void PilihJadwal(int Film){ //input Film dari atasssh
+int PilihJadwal(int Film){ //input Film dari atasssh
     int Jadwal;
     printf("Masukan pilihan jam tayang (1-4): ");
     scanf("%d", &Jadwal);
@@ -57,6 +59,7 @@ void PilihJadwal(int Film){ //input Film dari atasssh
         printf("Jam Tayang tidak ada. Silahkan coba lagi\n");
     } else {
         printf("Anda memilih Jadwal: %s untuk Film %s.\n", JadwalFilm[Film - 1][Jadwal - 1], NamaFilm[Film - 1]);
+        return Jadwal - 1;
     }
     if (Jadwal < 1 || Jadwal > 4){
         MenampilkanJadwal(Film);
