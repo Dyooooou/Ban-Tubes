@@ -1,72 +1,83 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#define Path "c:\\Sign In Sign Up\\database.txt"
+#include "SignUp.h"
 
 void SignUp();
 void SignIn();
 int cekemail();
 int cekpassword();
-char email[50]; // var global
-char password[10]; // var global
+User user; 
 
-int main() {
+void HomeScreen () {
     int pilihan;
-
+    
     do
-    {
+    { 
 
     printf("-----------------------------------------------------------\n");
     printf("                       SELAMAT DATANG DI                             \n");
     printf("                       BIOSKOP SUKA SUKA                        \n");
     printf("KETIK 1 : SIGN UP\n");
     printf("KETIK 2 : SIGN IN\n");
+    printf("KETIK 3 : EXIT\n");
     printf("-----------------------------------------------------------\n");
     printf("MASUKKAN PILIHANMU : ");
-    scanf("%d", &pilihan);
 
-    switch(pilihan){
-        case 1 : SignUp();
+    if(scanf("%d", &pilihan) !=1 ){
+        printf("Input tidak valid. Harapakan input kembali angka 1, 2, atau 3 \n ");
+        while (getchar() != '\n');  
+        continue;
+    }
+
+    switch (pilihan) {
+        case 1 : 
+            SignUp(&user);
+            SignIn();
         break;
-        case 2 : SignIn();
+        case 2 : 
+            SignIn();
         break;
-        default : printf("ANGKA YANG ANDA MASUKKAN TIDAK VALID\n");
+        case 3 : 
+            printf("TERIMA KASIH TELAH BERKUNJUNG.\n");
+        break;
+        default : 
+            printf("ANGKA YANG ANDA MASUKKAN TIDAK VALID\n");
         break;
     }
-    }while(pilihan != 2);
-    return 0;
+    }while(pilihan != 3);
 } 
 
-void SignUp(){
-     while(getchar() !='\n');
-     cek1:
-     printf("MASUKKAN EMAIL ANDA : ");
-     fgets(email, sizeof(email), stdin);
-     if(cekemail() == 0){
-        goto cek1;
-     }else{
-        cek2:
-        printf("MASUKKAN PASSWORD ANDA : ");
-        fgets(password, sizeof(password), stdin);
-        if(cekpassword() == 0){
-            goto cek2;
-        }else{
-            FILE *fptr = NULL;
-            fptr = fopen(Path, "a");
-            if(fptr == NULL){
-                system("cls");
-                printf("Coba Lagi");
-            }else{
-                fprintf(fptr, "%s %s\n", email, password);
-                printf("Sign Up Anda Berhasil\n");
-                fclose(fptr);
-                exit(0);
-            }
-        }
-     }
-}
+void SignUp(User *user){
 
-int cekemail(){
+     while(getchar() !='\n');
+     printf("MASUKKAN USERNAME ANDA : "); 
+     fgets(user->username, sizeof(user->username), stdin);
+     strtok(user->username, "\n");
+     do{
+        printf("MASUKKAN EMAIL ANDA : ");
+        fgets(user->email, sizeof(user->email), stdin);
+        strtok(user->email, "\n");
+        }while(!cekemail(user->email));
+    do{
+        printf("MASUKKAN PASSWORD ANDA : ");
+        fgets(user->password, sizeof(user->password), stdin);
+        strtok(user->password, "\n");
+        }while(!cekpassword(user->password));
+        FILE *fptr = NULL;
+        fptr = fopen("isi.txt", "a");
+        if(fptr == NULL){
+            system("cls");
+            printf("Coba Lagi");
+        }else{
+            fprintf(fptr, "%s,%s,%s\n", user->username, user->email, user->password);
+            printf("Sign Up Anda Berhasil\n");
+            fclose(fptr);
+            }
+}
+     
+// cek email yang di masukkan user
+int cekemail(const char *email){
     int panjang = strlen(email);
 
      if(panjang < 12){
@@ -84,7 +95,7 @@ int cekemail(){
         i++;
      }
      FILE *fptr = NULL;
-     fptr = fopen(Path, "r");
+     fptr = fopen("isi.txt", "r");
      if(fptr == NULL){
         system("cls");
      }else{
@@ -99,7 +110,8 @@ int cekemail(){
      return 1;
 }
 
-int cekpassword(){
+// untuk cek password yang dimasukkan user
+int cekpassword(const char *password){
     int panjang = strlen(password);
 
     if(panjang < 8){
@@ -120,28 +132,32 @@ int cekpassword(){
 }
 
 void SignIn(){
+    char inputemail[50];
+    char inputpassword[50];
+    char storedemail[50];
+    char storedpassword[50];
+    char storedusername[50];
+    int found = 0;
+
     while(getchar() != '\n');
     printf("MASUKKAN EMAIL ANDA: ");
-    fgets(email, sizeof(email), stdin);
+    fgets(inputemail, sizeof(inputemail), stdin);
+    strtok(inputemail, "\n");
     printf("MASUKKAN PASSWORD ANDA: ");
-    fgets(password, sizeof(password), stdin);
+    fgets(inputpassword, sizeof(inputpassword), stdin);
+    strtok(inputpassword, "\n");
 
-    FILE *fptr = NULL;
-    fptr = fopen(Path, "r");
-    if(fptr == NULL){
-        system("cls");
-    }else{
-        while(fscanf(fptr,"%s", email) == 0){
-            if(strcmp(email, "1") == 0){
-                fscanf(fptr,"%s", password);
-                if(strcmp(password, "1") == 0){
-                    system("cls");
-                    printf("Sign In Anda Berhasil \n");
-                    exit(0);
-                }
-            }
+    FILE *fptr = fopen("isi.txt", "r");
+    while(fscanf(fptr, "%s,%s,%s\n", storedusername, storedemail, storedpassword) != EOF){
+        if(strcmp(inputemail, storedemail) == 0 && strcmp(inputpassword, storedpassword) == 0){
+            found = 1;
+            break;
         }
-        system("cls");
-        printf("EMAIL DAN PASSWORD ANDA SALAH. COBA SEKALI LAGI ATAU PERGI KE MENU Sign Up\n");
+    }
+    fclose(fptr);
+    if(found){
+        printf("SELAMAT LOGIN ANDA BERHASIL.\n");
+    }else{
+        printf("EMAIL ATAU PASSWORD ANDA SALAH. SILAHKAN COBA LAGI.\n");
     }
 }
