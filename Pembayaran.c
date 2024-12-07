@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "Pembayaran.h"
 
+int Saldo;
+void rekeningbri();
+void rekeningmandiri();
 
-int main(){
+void tampilbank () {
     int pilihan;
     do{
     printf("==========PEMBAYARAN============\n");
@@ -22,13 +26,11 @@ int main(){
         break;
     }
     }while(pilihan != 2);
-    return 0;
 }
 
 void rekeningbri(){
     char RekeningInput[50];
     char RekeningFile[50];
-    int Saldo;
     int found = 0;
 
     printf("MASUKKAN NOMOR REKENING ANDA : ");
@@ -53,10 +55,9 @@ void rekeningbri(){
     }   
 }
 
-void rekeningmandiri(){
+void rekeningmandiri() {
     char RekeningInput[50];
     char RekeningFile[50];
-    int Saldo;
     int found = 0;
 
     printf("MASUKKAN NOMOR REKENING ANDA : ");
